@@ -1,6 +1,6 @@
 task :load_reference_data => :environment do
   ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['test'])
-  Dir["#{RAILS_ROOT}/app/models/reference_data/**/*.rb"].each {|f| require f}
+  Dir["#{Rails.root}/app/models/reference_data/**/*.rb"].each {|f| require f}
   require 'active_record/fixtures'
 
   ActiveRecord::Base.connection.disable_referential_integrity do
