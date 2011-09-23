@@ -1,3 +1,5 @@
+require 'acts_as_reference_data/railtie' if defined?(Rails)
+
 # An ActiveRecord extension that allows a model to be marked as reference data.
 # Models marked as such will have a number of methods automatically created.
 # These methods will only query the database a single time to lookup the data.
