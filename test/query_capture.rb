@@ -66,7 +66,9 @@ class ActiveSupport::TestCase
 
   def capture_queries
     queries = capture_raw_queries { yield }
-    queries.map {|x| x.to_sql.squeeze(' ').strip}
+    queries.map do |x|
+      x.respond_to?(:to_sql) ? x.to_sql.squeeze(' ').strip : x.squeeze(' ').strip
+    end
   end
 
   def capture_raw_queries

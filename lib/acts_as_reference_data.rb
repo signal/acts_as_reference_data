@@ -169,10 +169,10 @@ module ActsAsReferenceData
   end
 
   module InstanceMethods
-    def respond_to?(symbol)
+    def respond_to?(symbol, include_private=false)
       # Make sure all dynamic methods have been generated
       self.class.all_by_code
-      super(symbol)
+      super(symbol, include_private)
     end
 
     private
