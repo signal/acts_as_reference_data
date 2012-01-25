@@ -26,7 +26,7 @@ task :load_reference_data => :environment do
           attributes.delete('id')
 
           ref_data = ref_data_class.new(attributes)
-          ref_data.id = Fixtures.identify(attributes['code'])
+          ref_data.id = ActiveRecord::Fixtures.identify(attributes['code'])
           ref_data.save!
         end
       end
