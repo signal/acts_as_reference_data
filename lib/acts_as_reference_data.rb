@@ -1,4 +1,5 @@
 require 'acts_as_reference_data/railtie' if defined?(Rails)
+require 'weakref'
 
 # An ActiveRecord extension that allows a model to be marked as reference data.
 # Models marked as such will have a number of methods automatically created.
@@ -46,7 +47,7 @@ module ActsAsReferenceData
       END
 
       install_dynamic_loading_hook
-      __reference_data_classes__ << self
+      __reference_data_classes__ << WeakRef.new(self)
     end
 
     def __reference_data_classes__
