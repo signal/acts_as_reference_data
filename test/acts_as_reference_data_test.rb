@@ -97,6 +97,10 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert_raise(TypeError) { FooType.BAR.update_attribute(:code, 'oops') }
   end
 
+  def test_can_get_references_to_all_reference_data_classes
+    assert ActiveRecord::Base.__reference_data_classes__.include?(FooType)
+  end
+
   private
 
   def define_test_class
@@ -109,7 +113,7 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
 
   def unload_test_class
     self.class.class_eval do
-      remove_const(:FooType)
+      remove_const('FooType')
     end
   end
 

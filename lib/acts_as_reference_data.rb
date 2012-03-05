@@ -47,11 +47,14 @@ module ActsAsReferenceData
       END
 
       install_dynamic_loading_hook
-      __reference_data_classes__ << WeakRef.new(self)
+      @@__reference_data_classes__ ||= Set.new
+      @@__reference_data_classes__ << WeakRef.new(self)
     end
 
     def __reference_data_classes__
       @@__reference_data_classes__ ||= Set.new
+      @@__reference_data_classes__.reject! {|x| !x.weakref_alive? }
+      @@__reference_data_classes__.map {|x| x.__getobj__ }
     end
 
     # Clears out all in memory cached objects for all reference data classes.
