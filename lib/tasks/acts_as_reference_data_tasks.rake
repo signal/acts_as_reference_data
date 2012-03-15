@@ -11,7 +11,6 @@ task :load_reference_data => :environment do
         dev_ref_data_class = Class.new(ref_data_class)
         dev_ref_data_class.const_set("Dev", dev_ref_data_class)
         dev_ref_data_class.class_eval do
-          set_table_name ref_data_class.table_name.sub(/.*\./, '')
           establish_connection(:development)
         end
 
@@ -27,7 +26,7 @@ task :load_reference_data => :environment do
 
           ref_data = ref_data_class.new(attributes)
           ref_data.id = ActiveRecord::Fixtures.identify(attributes['code'])
-          ref_data.save!
+          ref_data.save!(:validate => false)
         end
       end
     end
