@@ -115,7 +115,7 @@ module ActsAsReferenceData
 
       def fail_on_modifying_code
         if code_changed?
-          raise 'Referene data codes cannot be changed through the application. ' +
+          raise 'Reference data codes cannot be changed through the application. ' +
             'Change the data in the database and modify the application instead.'
         end
       end
