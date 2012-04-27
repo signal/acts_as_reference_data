@@ -59,30 +59,11 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
   def test_cached_object_only_has_all_attributes_loaded
     assert_not_nil FooType.BAR.id
     assert_not_nil FooType.BAR.code
-    assert_not_nil FooType.BAR.attributes['description']
+    assert_not_nil FooType.BAR.description
 
     assert_not_nil FooType['BAZ'].id
     assert_not_nil FooType['BAZ'].code
-    assert_not_nil FooType['BAZ'].attributes['description']
-  end
-
-  def test_cached_objects_can_retrieve_alternate_attributes_but_it_queries_every_time
-    FooType.BAR
-    assert_num_queries(2) do
-      2.times { assert_equal 'bar type', FooType.BAR.description }
-    end
-  end
-
-  def test_cached_objects_do_not_requery_for_code_or_id
-    FooType.BAR
-    assert_num_queries(0) do
-      2.times { FooType.BAR.code }
-      2.times { FooType.BAR.id }
-    end
-  end
-
-  def test_bang_variant_generated_for_getting_all_attributes_from_database
-    assert_not_nil FooType.BAR!.description
+    assert_not_nil FooType['BAZ'].description
   end
 
   def test_reference_data_objects_cannot_be_destroyed

@@ -20,10 +20,6 @@ module ActsAsReferenceData
               self.#{real.upcase}
             end
 
-            def self.#{synonym.upcase}!
-              self.#{real.upcase}!
-            end
-
             def #{synonym.downcase}?
               #{real.downcase}?
             end
@@ -94,29 +90,10 @@ module ActsAsReferenceData
             self['#{code}']
           end
 
-          def self.#{code}!
-            self.find(#{obj.id})
-          end
-
           def #{code.downcase}?
             code.upcase == '#{code}'
           end
-
-          def full_instance
-            self.class.find(self.id)
-          end
         END
-
-        lazily_loaded_attributes = self.column_names - %w(id code)
-        lazily_loaded_attributes.each do |attribute|
-          obj.instance_eval <<-END, __FILE__, __LINE__ + 1
-            class << self
-              def #{attribute}
-                self.class.find(self.id).#{attribute}
-              end
-            end
-          END
-        end
       end
 
       reference_data
