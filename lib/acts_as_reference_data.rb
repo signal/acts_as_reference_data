@@ -79,17 +79,8 @@ module ActsAsReferenceData
       defined?(@__reference_data__) && !@__reference_data__.empty?
     end
 
-    def loading?
-      defined?(@__loading_ref_data) && @__loading_ref_data
-    end
-
     private
     def load_reference_data
-      # Stop any infinite recursion attempts
-      return if loading?
-
-      @__loading_ref_data = true
-
       reference_data = {}
       self.find(:all).each do |data|
         reference_data[data.attributes['code'].upcase] = data.freeze
@@ -128,18 +119,11 @@ module ActsAsReferenceData
         end
       end
 
-      @__loading_ref_data = false
       reference_data
     end
   end
 
   module InstanceMethods
-    def respond_to?(symbol, include_private=false)
-      # Make sure all dynamic methods have been generated
-      self.class.all_by_code
-      super(symbol, include_private)
-    end
-
     private
       def fail_on_destroy
         raise 'Reference data types cannot be destroyed through the application. ' +
