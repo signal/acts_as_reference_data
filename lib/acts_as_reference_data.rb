@@ -46,9 +46,10 @@ module ActsAsReferenceData
         end
       END
 
-      install_dynamic_loading_hook
       @@__reference_data_classes__ ||= Set.new
       @@__reference_data_classes__ << WeakRef.new(self)
+
+      all_by_code
     end
 
     def __reference_data_classes__
@@ -129,46 +130,6 @@ module ActsAsReferenceData
 
       @__loading_ref_data = false
       reference_data
-    end
-
-    def install_dynamic_loading_hook
-      # We need to hook the class method_missing method to try reloading the
-      # reference data when running in test mode. This is because we are loading
-      # the reference data from fixtures and they aren't in the database
-      # when this code is evaluated. Therefore, we will dynamically load it
-      # on first access.
-      logger.debug {"Installing dynamic loading hook on #{self}"}
-      class_eval <<-END, __FILE__, __LINE__ + 1
-        class << self
-          def method_missing_with_load_ref_data_call(method, *args)
-            unless loaded? || loading?
-              self.all_by_code
-              if respond_to?(method)
-                return send(method, *args)
-              end
-            end
-
-            method_missing_without_load_ref_data_call(method, *args)
-          end
-
-          alias :method_missing_without_load_ref_data_call :method_missing
-          alias :method_missing :method_missing_with_load_ref_data_call
-        end
-
-        def method_missing_with_load_ref_data_call(method, *args)
-          unless self.class.loaded? || self.class.loading?
-            self.class.all_by_code
-            if respond_to?(method)
-              return send(method, *args)
-            end
-          end
-
-          method_missing_without_load_ref_data_call(method, *args)
-        end
-
-        alias :method_missing_without_load_ref_data_call :method_missing
-        alias :method_missing :method_missing_with_load_ref_data_call
-      END
     end
   end
 
