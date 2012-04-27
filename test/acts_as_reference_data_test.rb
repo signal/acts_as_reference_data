@@ -32,11 +32,6 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert_not_nil FooType.BOP
   end
 
-  #def test_loading_independent_between_tests
-  #  ActiveRecord::Base.connection.insert("INSERT INTO foo_types(code, description) VALUES('bop', 'bop type')")
-  #  assert_not_nil FooType.BOP
-  #end
-
   def test_type_interegation_methods
     assert FooType.BAR.bar?
     assert !FooType.BAR.baz?
