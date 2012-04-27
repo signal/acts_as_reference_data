@@ -75,6 +75,11 @@ module ActsAsReferenceData
       defined?(@__reference_data__) && !@__reference_data__.empty?
     end
 
+    def reload_reference_data
+      reset
+      all_by_code
+    end
+
     private
     def load_reference_data
       reference_data = {}

@@ -26,6 +26,12 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert_equal 1, FooType.BAR.id
   end
 
+  def test_can_reload_reference_data
+    ActiveRecord::Base.connection.insert("INSERT INTO foo_types(code, description) VALUES('bop', 'bop type')")
+    FooType.reload_reference_data
+    assert_not_nil FooType.BOP
+  end
+
   #def test_loading_independent_between_tests
   #  ActiveRecord::Base.connection.insert("INSERT INTO foo_types(code, description) VALUES('bop', 'bop type')")
   #  assert_not_nil FooType.BOP
