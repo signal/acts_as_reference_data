@@ -75,16 +75,16 @@ module ActsAsReferenceData
       self.all_by_code[code.to_s.upcase]
     end
 
-    def reset
-      @__reference_data__ = nil
-    end
-
     def reload_reference_data
       reset
       all_by_code
     end
 
     private
+    def reset
+      @__reference_data__ = nil
+    end
+
     def load_reference_data
       reference_data = {}
       self.find(:all).each do |data|
