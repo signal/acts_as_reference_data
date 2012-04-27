@@ -13,17 +13,7 @@ module ActsAsReferenceData
     def acts_as_reference_data(options = {})
       if options[:synonyms]
         options[:synonyms].each do |real, synonym|
-          real, synonym = [real, synonym].map(&:to_s)
-
-          class_eval <<-END, __FILE__, __LINE__ + 1
-            def self.#{synonym.upcase}
-              self.#{real.upcase}
-            end
-
-            def #{synonym.downcase}?
-              #{real.downcase}?
-            end
-          END
+          define_synonym_methods(real, synonym)
         end
       end
 
@@ -60,6 +50,24 @@ module ActsAsReferenceData
         klass.reset
       end
     end
+
+    private
+    # Defines alternate methods for the real reference data values. This is
+    # useful when the reference data codes are shorten in the datbase, and
+    # therefore hard to remember.
+    def define_synonym_methods(real, synonym)
+      real, synonym = [real, synonym].map(&:to_s)
+
+      class_eval <<-END, __FILE__, __LINE__ + 1
+        def self.#{synonym.upcase}                 # def self.MALE
+          self.#{real.upcase}                      #   self.M
+        end                                        # end
+
+        def #{synonym.downcase}?                   # def male?
+          #{real.downcase}?                        #   m?
+        end                                        # end
+      END
+    end
   end
 
   module ClassMethods
@@ -86,18 +94,24 @@ module ActsAsReferenceData
       logger.debug { "Loaded #{reference_data.keys.inspect} for #{self}" }
 
       reference_data.each do |code,obj|
-        class_eval <<-END, __FILE__, __LINE__ + 1
-          def self.#{code}
-            self['#{code}']
-          end
-
-          def #{code.downcase}?
-            code.upcase == '#{code}'
-          end
-        END
+        define_reference_data_methods(obj)
       end
 
       reference_data
+    end
+
+    def define_reference_data_methods(object)
+      code = object.code
+
+      class_eval <<-END, __FILE__, __LINE__ + 1
+        def self.#{code.upcase}                    # def self.MALE
+          self['#{code.upcase}']                   #   self['MALE']
+        end                                        # end
+
+        def #{code.downcase}?                      # def male?
+          code.upcase == '#{code.upcase}'          #   code.upcase == 'MALE'
+        end                                        # end
+      END
     end
   end
 
