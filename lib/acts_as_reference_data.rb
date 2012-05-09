@@ -80,6 +80,13 @@ module ActsAsReferenceData
       all_by_code
     end
 
+    # This is a class method that subclasses can override to run additional
+    # logic after reference data is loaded from the database. This might be
+    # useful to index reference data by an alternate means of looking up the
+    # data.
+    def loaded
+    end
+
     private
     def reset
       @__reference_data__ = nil
@@ -96,6 +103,8 @@ module ActsAsReferenceData
       reference_data.each do |code,obj|
         define_reference_data_methods(obj)
       end
+
+      loaded
 
       reference_data
     end

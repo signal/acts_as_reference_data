@@ -83,6 +83,19 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert ActiveRecord::Base.__reference_data_classes__.include?(FooType)
   end
 
+  test "callbacks are available for when reference data is loaded from the database" do
+    class << FooType
+      attr_accessor :loaded_called
+    end
+
+    def FooType.loaded
+      FooType.loaded_called = true
+    end
+
+    FooType.reload_reference_data
+    assert FooType.loaded_called
+  end
+
   private
 
   def define_test_class
