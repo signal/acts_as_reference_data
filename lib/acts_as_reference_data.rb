@@ -110,12 +110,18 @@ module ActsAsReferenceData
 
   module ClassMethods
     def [](code)
+      if @_ref_data_needs_reload
+        self.all_by_code.each do |_, obj|
+          obj.reload
+        end
+        loaded
+        @_ref_data_needs_reload = true
+      end
       self.all_by_code[code.to_s.upcase]
     end
 
-    def reload_reference_data
-      reset
-      all_by_code
+    def needs_reload
+      @_ref_data_needs_reload = true
     end
 
     # This is a class method that subclasses can override to run additional
@@ -126,14 +132,10 @@ module ActsAsReferenceData
     end
 
     private
-    def reset
-      @__reference_data__ = nil
-    end
-
     def load_reference_data
       reference_data = {}
       self.find(:all).each do |data|
-        reference_data[data.attributes['code'].upcase] = data.freeze
+        reference_data[data.attributes['code'].upcase] = data
       end
 
       logger.debug { "Loaded #{reference_data.keys.inspect} for #{self}" }

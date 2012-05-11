@@ -26,12 +26,6 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert_equal 1, FooType.BAR.id
   end
 
-  def test_can_reload_reference_data
-    ActiveRecord::Base.connection.insert("INSERT INTO foo_types(code, description) VALUES('bop', 'bop type')")
-    FooType.reload_reference_data
-    assert_not_nil FooType.BOP
-  end
-
   def test_type_interegation_methods
     assert FooType.BAR.bar?
     assert !FooType.BAR.baz?
@@ -76,14 +70,22 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
   end
 
   def test_reference_data_objects_cannot_have_their_code_changed
-    assert_raise(TypeError) { FooType.BAR.update_attribute(:code, 'oops') }
+    assert_raise(RuntimeError) { FooType.BAR.update_attribute(:code, 'oops') }
   end
 
   def test_can_get_references_to_all_reference_data_classes
     assert ActiveRecord::Base.__reference_data_classes__.include?(FooType)
   end
 
-  test "callbacks are available for when reference data is loaded from the database" do
+  test "calling needs_reload makes the next attempt to pull an object reload all objects" do
+    bar1, bar2 = nil, nil
+    assert_num_queries(0) { bar1 = FooType.BAR }
+    FooType.needs_reload
+    assert_num_queries(2) { bar2 = FooType.BAR }
+    assert_same bar1, bar2
+  end
+
+  test "callbacks are available for when reference data is reloaded from the database" do
     class << FooType
       attr_accessor :loaded_called
     end
@@ -92,7 +94,8 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
       FooType.loaded_called = true
     end
 
-    FooType.reload_reference_data
+    FooType.needs_reload
+    FooType.BAR
     assert FooType.loaded_called
   end
 
