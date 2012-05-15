@@ -6,14 +6,14 @@ class IsolationTest < ActiveSupport::TestCase
   self.use_transactional_fixtures = false
 
   def setup
-    ActiveRecord::Base.connection.create_table('foo_types') do |t|
+    ActiveRecord::Base.connection.create_table('foo_types', :force => true) do |t|
       t.column 'code', :string
       t.column 'description', :string
     end
     ActiveRecord::Base.connection.insert("INSERT INTO foo_types(code, description) VALUES('bar', 'bar type')")
     ActiveRecord::Base.connection.insert("INSERT INTO foo_types(code, description) VALUES('baz', 'baz type')")
 
-    ActiveRecord::Base.connection.create_table('goo_types') do |t|
+    ActiveRecord::Base.connection.create_table('goo_types', :force => true) do |t|
       t.column 'code', :string
       t.column 'description', :string
     end

@@ -5,11 +5,45 @@ require 'weakref'
 # Models marked as such will have a number of methods automatically created.
 # These methods will only query the database a single time to lookup the data.
 module ActsAsReferenceData
-  def self.included(klass)
-    klass.extend(ActiveRecordExtension)
+  def self.fixture_classes
+    ActiveRecord::Base.__reference_data_classes__.select do |klass|
+      klass.generated_fixtures
+    end
   end
 
   module ActiveRecordExtension
+    # Includes the reference data behavior on this class.
+    #
+    # There are a few options that can be passed.
+    #
+    # synonyms:
+    #   You can pass a hash of synonyms that should be available for reference
+    #   data lookup. This is useful when the code in the database is poorly
+    #   named, but you can't change the value.
+    #
+    #       acts_as_reference_data :synonyms => {:M => :MALE}
+    #
+    # generated_fixtures:
+    #   When true, reference data will be copied from the development database
+    #   to the test database before tests are run. The primary key is modified
+    #   to align with what would be generated if a fixture file was present
+    #   with the fixture name == to the code.
+    #
+    #   By copying the rows with this modified key, you can set reference data
+    #   associations using the same syntax you would use for normal fixtures.
+    #
+    #       class Gender < ActiveRecord::Base
+    #         acts_as_reference_data
+    #       end
+    #
+    #       class Person < ActiveRecord::Base
+    #         belongs_to :gender
+    #       end
+    #
+    #       # people.yml
+    #       some_guy:
+    #         gender: MALE
+    #
     def acts_as_reference_data(options = {})
       if options[:synonyms]
         options[:synonyms].each do |real, synonym|
@@ -25,12 +59,16 @@ module ActsAsReferenceData
         include ActsAsReferenceData::InstanceMethods
         extend ActsAsReferenceData::ClassMethods
 
+        class_attribute :generated_fixtures
+
         class << self
           def all_by_code
             @__reference_data__ ||= load_reference_data
           end
         end
       END
+
+      self.generated_fixtures = options.fetch(:generated_fixtures, true)
 
       @@__reference_data_classes__ ||= Set.new
       @@__reference_data_classes__ << WeakRef.new(self)
@@ -145,4 +183,4 @@ module ActsAsReferenceData
   end
 end
 
-ActiveRecord::Base.class_eval { include ActsAsReferenceData }
+ActiveRecord::Base.class_eval { extend ActsAsReferenceData::ActiveRecordExtension }

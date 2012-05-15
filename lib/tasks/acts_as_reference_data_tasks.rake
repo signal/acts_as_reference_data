@@ -5,7 +5,7 @@ task :load_reference_data => :environment do
 
   ActiveRecord::Base.connection.disable_referential_integrity do
     ActiveRecord::Base.transaction do
-      ActiveRecord::Base.__reference_data_classes__.each do |ref_data_class|
+      ActsAsReferenceData.fixture_classes.each do |ref_data_class|
         ref_data_class.delete_all
 
         dev_ref_data_class = Class.new(ref_data_class)

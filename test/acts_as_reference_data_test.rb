@@ -7,7 +7,7 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
   self.use_transactional_fixtures = false
 
   def setup
-    ActiveRecord::Base.connection.create_table('foo_types') do |t|
+    ActiveRecord::Base.connection.create_table('foo_types', :force => true) do |t|
       t.column 'code', :string
       t.column 'description', :string
     end
@@ -94,6 +94,15 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
 
     FooType.reload_reference_data
     assert FooType.loaded_called
+  end
+
+  test "can obtain a list of classes that should have fixtures generated" do
+    assert ActsAsReferenceData.fixture_classes.include?(FooType)
+  end
+
+  test "class can opt out of having its data copied to the test database" do
+    FooType.generated_fixtures = false
+    assert !ActsAsReferenceData.fixture_classes.include?(FooType)
   end
 
   private
