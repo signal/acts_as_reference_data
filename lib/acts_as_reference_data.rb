@@ -11,6 +11,19 @@ module ActsAsReferenceData
     end
   end
 
+  def self.reload_reference_data
+    ActiveRecord::Base.__reference_data_classes__.each do |klass|
+      klass.reload_reference_data rescue nil
+    end
+  end
+
+  # Loads all reference data from the database that hasn't yet been loaded.
+  def self.load_reference_data!
+    ActiveRecord::Base.__reference_data_classes__.each do |klass|
+      klass.all_by_code
+    end
+  end
+
   module ActiveRecordExtension
     # Includes the reference data behavior on this class.
     #
@@ -73,7 +86,11 @@ module ActsAsReferenceData
       @@__reference_data_classes__ ||= Set.new
       @@__reference_data_classes__ << WeakRef.new(self)
 
-      all_by_code
+      begin
+        all_by_code
+      rescue
+        # Ignoring this for now. We'll try loading later on too via a railtie.
+      end
     end
 
     def __reference_data_classes__
@@ -122,6 +139,11 @@ module ActsAsReferenceData
 
     def needs_reload
       @_ref_data_needs_reload = true
+    end
+
+    def reload_reference_data
+      @__reference_data__ = nil
+      all_by_code
     end
 
     # This is a class method that subclasses can override to run additional
