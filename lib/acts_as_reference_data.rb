@@ -132,7 +132,7 @@ module ActsAsReferenceData
           obj.reload
         end
         loaded
-        @_ref_data_needs_reload = true
+        @_ref_data_needs_reload = false
       end
       self.all_by_code[code.to_s.upcase]
     end
