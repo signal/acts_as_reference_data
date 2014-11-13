@@ -58,6 +58,10 @@ module ActsAsReferenceData
     #         gender: MALE
     #
     def acts_as_reference_data(options = {})
+      def named(name)
+        self[name]
+      end
+
       if options[:synonyms]
         options[:synonyms].each do |real, synonym|
           define_synonym_methods(real, synonym)
