@@ -16,7 +16,7 @@ For example, `SubscriptionType` is an ActiveRecord:
 
 It's assumed that migrations have been created to populate this table with various types, e.g. `SMS` or `EMAIL`.
 
-This allows us to reference these database objects with consistent pointers from the codebase. Some developers dislike this approach, but we are thoroughly entrenched, so read it and weep:
+This allows us to reference these database objects with consistent pointers from the codebase:
 
     if criteria_type == :mobile_number
       send_verification_message_to_mobile(verification_code, user, @amoe_form.campaign)
