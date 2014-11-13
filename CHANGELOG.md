@@ -3,7 +3,7 @@ Changelog
 
 ### 0.1.0
 
-Nick Kaye added documentation, and added an additional usage option that aliases the esoteric e.g. `SubscriptionType.SMS` with the more explicit (given that we are returning an ActiveRecord instance) `SubscriptionType.of(:SMS)`.
+Nick Kaye added documentation, and added an additional usage option that aliases the esoteric e.g. `SubscriptionType.SMS` with the more explicit (given that we are returning an ActiveRecord instance) `SubscriptionType.named(:SMS)`.
 
 ### 0.0.1
 
