@@ -34,6 +34,14 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert !FooType.BAZ.bar?
   end
 
+  def test_type_explicit_methods
+    assert FooType.named(:BAR).bar?
+    assert !FooType.named(:BAR).baz?
+
+    assert FooType.named(:BAZ).baz?
+    assert !FooType.named(:BAZ).bar?
+  end
+
   def test_type_interagation_methods_when_finding_by_primary_key
     assert FooType.find(1).bar?
     assert !FooType.find(1).baz?
