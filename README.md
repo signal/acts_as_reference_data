@@ -20,20 +20,22 @@ This allows us to reference these database objects with consistent pointers from
 
     if criteria_type == :mobile_number
       send_verification_message_to_mobile(verification_code, user, @amoe_form.campaign)
-      subscription_type = SubscriptionType.SMS
+      subscription_type = SubscriptionType.named(:SMS)
     else
       send_verification_message_to_email_address(verification_code, criteria, @amoe_form.campaign, user.id)
-      subscription_type = SubscriptionType.EMAIL
+      subscription_type = SubscriptionType.named(:EMAIL)
     end
 
-NOTE: `SubscriptionType.SMS` returns an instance of ActiveRecord for the record corresponding to `SMS`.
+NOTE: `SubscriptionType.named(:SMS)` returns an instance of ActiveRecord for the record corresponding to `SMS`.
+
+NOTE: The original usage creates an accessor for each record, and that usage still works fine e.g. `SubscriptionType.SMS` also returns an instance of ActiveRecord for the record corresponding to `SMS`.
 
 From there, we have access to `.code` and other reference data:
 
     def populate_campaign_prompt
-      if params['sub_type'] == SubscriptionType.SMS.code
+      if params['sub_type'] == SubscriptionType.named(:SMS).code
         render :partial =>'sms_prompt'
-      elsif params['sub_type'] == SubscriptionType.EMAIL.code
+      elsif params['sub_type'] == SubscriptionType.named(:EMAIL).code
         render :partial => 'email_prompt'
       end
     end
