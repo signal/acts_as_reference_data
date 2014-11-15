@@ -58,7 +58,7 @@ module ActsAsReferenceData
     #         gender: MALE
     #
     def acts_as_reference_data(options = {})
-      def named(name)
+      def self.named(name)
         self[name]
       end
 

@@ -85,7 +85,7 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert ActiveRecord::Base.__reference_data_classes__.include?(FooType)
   end
 
-  test "calling needs_reload makes the next attempt to pull an object reload all objects" do
+  test 'calling needs_reload makes the next attempt to pull an object reload all objects' do
     bar1, bar2 = nil, nil
     assert_num_queries(0) { bar1 = FooType.BAR }
     FooType.needs_reload
@@ -93,7 +93,7 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert_same bar1, bar2
   end
 
-  test "callbacks are available for when reference data is reloaded from the database" do
+  test 'callbacks are available for when reference data is reloaded from the database' do
     class << FooType
       attr_accessor :loaded_called
     end
@@ -107,11 +107,11 @@ class ActsAsReferenceDataTest < ActiveSupport::TestCase
     assert FooType.loaded_called
   end
 
-  test "can obtain a list of classes that should have fixtures generated" do
+  test 'can obtain a list of classes that should have fixtures generated' do
     assert ActsAsReferenceData.fixture_classes.include?(FooType)
   end
 
-  test "class can opt out of having its data copied to the test database" do
+  test 'class can opt out of having its data copied to the test database' do
     FooType.generated_fixtures = false
     assert !ActsAsReferenceData.fixture_classes.include?(FooType)
   end
